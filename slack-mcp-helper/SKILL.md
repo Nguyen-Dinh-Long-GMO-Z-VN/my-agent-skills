@@ -256,12 +256,11 @@ Full output written to: /tmp/devin-overflows-1000/<hash>/content.txt
 ### 7. Check unread mentions (@ tags not yet read)
 
 When the user asks "ai tag mình mà chưa đọc", "check mentions", "who @ me",
-"xem ai TO @ mà chưa đọc":
+"xem ai TO @ mà chưa đọc", "ai nhắc tới tôi":
 
-1. **Determine the user's Slack UserID** — if not known, ask the user or look
-   through recent messages they sent to find their UserID. Alternatively, the
-   user may tell you their UserName, and you can find their UserID from the
-   `UserID`/`UserName` columns in channel history.
+1. **The user's Slack UserID is `U08D54006TZ`** (longnd — Nguyễn Đình Long).
+   Use this directly — do NOT ask the user for their UserID. If you need to
+   verify, check messages they sent (e.g. in `#long_bot` / `C0B8HLZLL5P`).
 2. **Identify channels to check** — use `channels_me` to list channels the
    user has joined. Focus on channels where the user is likely mentioned
    (work channels, not social ones, unless the user says otherwise).
