@@ -9,11 +9,13 @@ description: >-
   search, summarize, post, reply, react, cross-post, or find unread mentions
   in Slack, or pastes a Slack URL (app.slack.com/client/... or
   <workspace>.slack.com/archives/...), or mentions "channel", "thread", "Slack",
-  "tin nhắn", "thảo luận", "post lên", "tóm tắt channel", "reply", "reaction",
-  "like", "tag", "mention", "chưa đọc", "ai tag mình", "@here", "@channel",
-  "@subteam", "group mention", or any similar phrasing — even if they don't
-  explicitly say "use the Slack MCP". Trigger aggressively for any Slack-related
-  task.
+  "slack", "tin nhắn", "thảo luận", "post lên", "tóm tắt channel", "reply",
+  "reaction", "like", "tag", "mention", "nhắc tới", "nhắc đến", "tag mình",
+  "chưa đọc", "ai tag mình", "ai nhắc", "ai mention", "ai @", "@here",
+  "@channel", "@subteam", "group mention", "unreads", "đọc tin", "xem tin",
+  or any similar phrasing — even if they don't explicitly say "use the Slack
+  MCP". Trigger aggressively for any Slack-related task, especially when the
+  user mentions Slack + any of: tag, mention, nhắc, chưa đọc, unreads.
 ---
 
 # Slack MCP Helper
