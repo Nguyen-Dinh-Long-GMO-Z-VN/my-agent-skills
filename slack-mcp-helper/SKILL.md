@@ -4,14 +4,16 @@ description: >-
   Smooth, efficient operation of the Slack MCP server tools — reading channel
   history, fetching thread replies, posting/cross-posting messages, replying in
   threads, adding reactions, searching content, handling truncated output,
-  checking unread mentions, and summarizing discussions. Use this skill
-  whenever the user asks to read, search, summarize, post, reply, react,
-  cross-post, or find unread mentions in Slack, or pastes a Slack URL
-  (app.slack.com/client/... or <workspace>.slack.com/archives/...), or mentions
-  "channel", "thread", "Slack", "tin nhắn", "thảo luận", "post lên",
-  "tóm tắt channel", "reply", "reaction", "like", "tag", "mention", "chưa đọc",
-  "ai tag mình", or any similar phrasing — even if they don't explicitly say
-  "use the Slack MCP". Trigger aggressively for any Slack-related task.
+  checking unread mentions, detecting group mentions (@here/@channel/@subteam),
+  and summarizing discussions. Use this skill whenever the user asks to read,
+  search, summarize, post, reply, react, cross-post, or find unread mentions
+  in Slack, or pastes a Slack URL (app.slack.com/client/... or
+  <workspace>.slack.com/archives/...), or mentions "channel", "thread", "Slack",
+  "tin nhắn", "thảo luận", "post lên", "tóm tắt channel", "reply", "reaction",
+  "like", "tag", "mention", "chưa đọc", "ai tag mình", "@here", "@channel",
+  "@subteam", "group mention", or any similar phrasing — even if they don't
+  explicitly say "use the Slack MCP". Trigger aggressively for any Slack-related
+  task.
 ---
 
 # Slack MCP Helper
@@ -305,6 +307,64 @@ When the user asks "ai tag mình mà chưa đọc", "check mentions", "who @ me"
 **Marking as read**: After presenting, offer to mark the channels as read using
 `conversations_mark` — but only do this if the user confirms, as it's a
 state-changing operation.
+
+### 8. Check group mentions (@here, @channel, @subteam)
+
+When the user asks "ai @here/@channel hôm nay", "group mentions", "who tagged
+everyone", "xem ai @here @channel":
+
+1. **Use `conversations_search_messages`** with these search queries (run in
+   parallel in a single tool-call block):
+   - `search_query: "<!here>"` — matches @here mentions
+   - `search_query: "<!channel>"` — matches @channel mentions
+   - `search_query: "<!subteam>"` — matches @subteam (user group) mentions
+2. **Set date filter**:
+   - `filter_date_during: "2026-06-24"` for "today"
+   - `filter_date_after: "2026-06-20"` for "this week"
+   - Use the actual date — convert "today"/"yesterday" to YYYY-MM-DD.
+3. **Filter out bot messages** — exclude rows where:
+   - `BotName` is non-empty (e.g. `Amazon Q Developer`, `miyao-bot`)
+   - `UserID` is a known bot ID (e.g. `U03SFLMAT6E` for AWS, `USLACKBOT`)
+   - `UserName` is `hunter`, `chị chị em em`, `wf_bot_*`, etc.
+   Keep only human-sent group mentions, unless the user asks for bot alerts too.
+4. **Parse and present** — for each human group mention, show:
+   - **Time** (converted to JST or user's TZ if needed)
+   - **Sender** (RealName or UserName)
+   - **Channel** (channel name from the Channel column)
+   - **Message snippet** (first 100-150 chars of Text)
+   - **Mention type** (@here / @channel / @subteam)
+
+**Output format for group mentions:**
+```markdown
+## Group mentions — <date>
+
+### @here (N messages)
+| Time | Sender | Channel | Message |
+|------|--------|---------|---------|
+| HH:MM | <name> | #<channel> | <snippet> |
+
+### @channel (N messages)
+| Time | Sender | Channel | Message |
+|------|--------|---------|---------|
+| HH:MM | <name> | #<channel> | <snippet> |
+
+### @subteam (N messages)
+| Time | Sender | Channel | Message |
+|------|--------|---------|---------|
+| HH:MM | <name> | #<channel> | <snippet> |
+
+---
+*Total: N human group mentions (bots excluded)*
+```
+
+**Tips:**
+- `<!here>` notifies active members in the channel; `<!channel>` notifies ALL
+  members; `<!subteam^S...>` notifies a specific user group.
+- Bot channels (build notifications, AWS alerts) often use `<!channel>` —
+  filter these out unless the user specifically wants them.
+- The search query must include the angle brackets: `"<!here>"` not `"!here"`.
+- If the user asks for both direct @mentions AND group mentions, combine
+  workflow 7 (direct mentions) and workflow 8 (group mentions) in one response.
 
 ## Summary output format
 
