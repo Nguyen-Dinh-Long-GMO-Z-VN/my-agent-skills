@@ -1,0 +1,53 @@
+{
+  "skill_name": "slack-mcp-helper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "channel này hôm nay đã thảo luận về điều gì, đọc cả comment ở trong mỗi threads https://app.slack.com/client/T02FD6TBH3L/C05JG6KUS1J",
+      "expected_output": "A structured summary of today's discussion in channel C05JG6KUS1J, with each thread summarized including replies. Should fetch conversations_history with limit 1d, then batch-fetch all thread replies in parallel, then synthesize a grouped summary.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Hãy post nội dung vào channel khác này https://app.slack.com/client/T02FD6TBH3L/C09M108RUJW",
+      "expected_output": "Post a markdown message to channel C09M108RUJW using conversations_add_message. The content should be the summary from the previous context. Should parse the channel ID from the URL and call the tool with correct parameters.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "thread này bàn về điều gì https://vnlabcenter.slack.com/archives/C02G6L17HPU/p1782103396720169",
+      "expected_output": "Fetch and summarize a specific thread. Should parse the archives URL to extract channel_id=C02G6L17HPU and thread_ts=1782103396.720169 (converting p1782103396720169 by inserting dot before last 6 digits), then call conversations_replies and summarize the thread content.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "like Huy ! (trong thread https://vnlabcenter.slack.com/archives/C02G6L17HPU/p1782103396720169)",
+      "expected_output": "Add a thumbsup reaction to Huy's (huytn, U09JTBGGAT0) message in the thread. Should parse the URL to get channel_id=C02G6L17HPU and thread_ts=1782103396.720169, fetch thread replies, find Huy's message (MsgID 1782291382.291599 — the message 'Chắc chuyển qua tối mai nhỉ.'), and call reactions_add with emoji='thumbsup' (NOT name='thumbsup').",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "tìm trong channel C05JG6KUS1J ai nhắc đến 'chat memory' trong mấy ngày gần đây",
+      "expected_output": "Search for 'chat memory' keyword in channel C05JG6KUS1J. Should call conversations_history with a generous limit (e.g. 7d), scan the Text column for 'chat memory' or 'チャットメモリ', and present matching messages with author, time, and context. May also fetch thread replies for matching messages.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "reply vào thread này nói rằng 'Cảm ơn mọi người đã thảo luận, tôi sẽ xem xét và phản hồi sớm' https://vnlabcenter.slack.com/archives/C05JG6KUS1J/p1782269365692859",
+      "expected_output": "Reply in a thread. Should parse URL to get channel_id=C05JG6KUS1J and thread_ts=1782269365.692859, then call conversations_add_message with thread_ts=1782269365.692859 (the PARENT ts) and the specified text. Must use the parent message's ts, not any reply's ts.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "xem ai TO @ mình mà chưa đọc hôm nay trong channel C05JG6KUS1J",
+      "expected_output": "Check for unread mentions of the user in channel C05JG6KUS1J. Should fetch conversations_history with limit 1d, scan Text column for <@UserID> mentions of the current user, and present each mention with channel, author, time, message snippet, and thread context. The user's UserID needs to be determined (e.g. from their messages in context or by asking).",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "đọc hết tất cả thread replies trong channel C05JG6KUS1J hôm nay, có thread nào bị cắt thì đọc tiếp file overflow",
+      "expected_output": "Fetch all thread replies for today's threads in C05JG6KUS1J. When a conversations_replies response is truncated (has <truncation_notice>), read the overflow file to get full content. Should batch conversations_replies calls in parallel, then read any overflow files (also in parallel) for truncated responses.",
+      "files": []
+    }
+  ]
+}
