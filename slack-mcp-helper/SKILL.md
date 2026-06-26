@@ -127,13 +127,36 @@ This is the most common request. Do it efficiently:
 
 ### 2. Post / cross-post a message
 
+> **MANDATORY — User approval before posting**
+> Before calling `conversations_add_message`, you MUST:
+> 1. **Show the user a preview** of the exact message content (the full `text`
+>    you intend to post) and the target channel (name or URL).
+> 2. **Ask the user to approve** using the `ask_user_question` tool with a
+>    question like "Post this message to #<channel>?" and options:
+>    - "Post it" — proceed with posting
+>    - "Edit first" — let the user modify the content before posting
+>    - "Cancel" — abort the post
+> 3. **Only after the user selects "Post it"** (or explicitly says
+>    "post it" / "gửi đi" / "OK post" / similar) do you call
+>    `conversations_add_message`.
+> 4. If the user says "post it" / "gửi đi" / "OK" in their original request
+>    AND they provided the exact content themselves (not a summary you
+>    composed), you may skip the approval step — they already approved.
+> 5. **Never post silently** — if you're unsure whether the user has approved,
+>    ask. Posting the wrong message to a work channel is hard to undo.
+>
+> This applies to ALL posting scenarios: new messages, thread replies,
+> cross-posts, and any other use of `conversations_add_message`.
+
 1. **Determine the target channel** — from URL, channel ID, or name.
 2. **Determine the content** — if the user asks to "post the summary to
    channel X", compose a well-structured markdown message (see format below).
-3. **Call `conversations_add_message`** with `channel_id`, `text`, and
+3. **Get user approval** — show preview + ask via `ask_user_question` (see
+   the MANDATORY approval block above).
+4. **Call `conversations_add_message`** with `channel_id`, `text`, and
    `content_type: "text/markdown"` (default).
-4. **If replying in a thread** — include `thread_ts` of the parent message.
-5. **Confirm** — tell the user the channel and timestamp returned.
+5. **If replying in a thread** — include `thread_ts` of the parent message.
+6. **Confirm** — tell the user the channel and timestamp returned.
 
 For cross-posting a summary to another channel: keep the full content in the
 `text` parameter. If the message is very long (> 4000 chars), consider whether
