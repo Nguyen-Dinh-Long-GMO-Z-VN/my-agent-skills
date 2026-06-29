@@ -1,0 +1,26 @@
+{
+  "skill_name": "tempo-timesheet",
+  "evals": [
+    {
+      "id": 0,
+      "name": "view-week",
+      "prompt": "Check my Tempo timesheet for this week and tell me how many hours I've logged each day.",
+      "expected_output": "A readable breakdown of worklogs grouped by day with per-day and week totals, fetched via the Tempo API.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "create-and-cleanup",
+      "prompt": "Log 30m on OSHIETE-5801 for today with description 'eval test'. After confirming it was created, delete that worklog to clean up. Show me the before and after.",
+      "expected_output": "Creates a worklog (resolving OSHIETE-5801 to numeric issue ID via Jira MCP), confirms creation, then deletes it. Shows today's worklogs before and after.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "view-specific-day",
+      "prompt": "What did I log yesterday on Tempo? Give me the breakdown.",
+      "expected_output": "Fetches yesterday's worklogs via Tempo API and presents them with hours, issue IDs, and descriptions.",
+      "files": []
+    }
+  ]
+}
